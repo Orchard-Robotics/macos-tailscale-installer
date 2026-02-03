@@ -8,7 +8,7 @@ This avoids bugs (such as slow ssh transfers) in the proprietary MacOS GUI clien
 ## Installation ##
 
 ```
-curl https://raw.githubusercontent.com/Orchard-Robotics/macos-tailscale-installer/refs/heads/main/setup-tailscale.sh | sh
+curl https://raw.githubusercontent.com/Orchard-Robotics/macos-tailscale-installer/refs/heads/main/setup-tailscale.sh | bash
 ```
 
 You can then open Trayscale from spotlight or the installed `Trayscale.app` added to `/Applications`
