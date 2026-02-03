@@ -65,11 +65,13 @@ echo "[6/7] Connecting to Tailscale..."
 sudo tailscale up
 echo "  ✓ Tailscale connected"
 
-# 7. Set current user as operator
+# 7. Set current user as operator and accept routes
 echo ""
-echo "[7/7] Setting $USER as Tailscale operator..."
+echo "[7/7] Configuring Tailscale settings..."
 sudo tailscale set --operator="$USER"
 echo "  ✓ $USER set as operator"
+sudo tailscale set --accept-routes=true
+echo "  ✓ Accept routes enabled"
 
 # 8. Create Trayscale.app in Applications
 echo ""
