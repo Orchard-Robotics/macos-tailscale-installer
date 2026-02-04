@@ -123,7 +123,9 @@ input_logo=/tmp/trayscale_icon_256x256.png
 rm -rf $output_path
 mkdir -p $output_path
 
-cp "$trayscale_folder/share/icons/hicolor/256x256/apps/dev.deedles.Trayscale.png" $input_logo
+rm -f "$input_logo"
+cp "$trayscale_folder/share/icons/hicolor/256x256/apps/dev.deedles.Trayscale.png" "$input_logo"
+chmod 777 "$input_logo"
 
 for size in 16 32 64 128 256 512; do
   double="$(($size * 2))"
