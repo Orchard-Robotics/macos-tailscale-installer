@@ -1,7 +1,7 @@
 # Tailscale OSS Client Setup #
 This repo contains a simple script that will install and configure the open source [tailscaled](https://github.com/tailscale/tailscale) daemon and the unofficial [trayscale](https://github.com/DeedleFake/trayscale) MacOS GUI client.
 
-It additionally installs an Applescript app to easily run the GUI.
+It additionally installs an app file to easily run the GUI.
 
 This avoids bugs (such as slow ssh transfers) in the proprietary MacOS GUI client.
 
