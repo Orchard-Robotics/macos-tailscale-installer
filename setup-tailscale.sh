@@ -32,10 +32,16 @@ else
     echo "  ✓ Nix installed"
 fi
 
+
 # 3. Install trayscale via nix-shell
+set +e
 echo ""
 echo "[3/8] Installing trayscale via Nix..."
 nix-shell -p trayscale --run "echo '  ✓ Trayscale installed successfully'"
+sudo rm -f /etc/bashrc.backup-before-nix
+sudo rm -f /etc/zshrc.backup-before-nix
+set -e
+nix-shell -p trayscale --run "echo '  ✓ Trayscale installation verified'"
 
 # 4. Install Tailscale from Homebrew
 echo ""
@@ -99,8 +105,99 @@ echo "  ✓ DNS cache flushed"
 # 9. Create Trayscale.app in Applications
 echo ""
 echo "[Bonus] Creating Trayscale.app..."
-echo 'do shell script "/nix/var/nix/profiles/default/bin/nix-shell -p trayscale --run trayscale > /dev/null 2>&1 &"' | osacompile -o /Applications/Trayscale.app
+
+trayscale_bin=$(nix-shell -p trayscale --run "which trayscale")
+trayscale_bin_folder=$(dirname -- "$trayscale_bin")
+trayscale_folder=$(dirname -- "$trayscale_bin_folder")
+
+# Generate icns from PNG
+output_path=/tmp/trayscale.iconset
+input_logo=/tmp/trayscale_icon_256x256.png
+rm -rf $output_path
+mkdir -p $output_path
+
+cp "$trayscale_folder/share/icons/hicolor/256x256/apps/dev.deedles.Trayscale.png" $input_logo
+
+for size in 16 32 64 128 256 512; do
+  double="$(($size * 2))"
+  sips $input_logo -Z $size --out $output_path/icon_${size}x${size}.png > /dev/null
+  sips $input_logo -Z $double --out $output_path/icon_${size}x${size}@2x.png > /dev/null
+done
+
+iconutil -c icns $output_path
+
+# Create app bundle structure
+APP_PATH="/Applications/Trayscale.app"
+sudo rm -rf "$APP_PATH"
+sudo mkdir -p "$APP_PATH/Contents/MacOS"
+sudo mkdir -p "$APP_PATH/Contents/Resources"
+
+# Create executable
+sudo tee "$APP_PATH/Contents/MacOS/Trayscale" > /dev/null << 'EOF'
+#!/bin/bash
+export XDG_DATA_DIRS="/opt/homebrew/share:/usr/local/share:/usr/share"
+exec "/opt/homebrew/libexec/trayscale"
+EOF
+sudo chmod +x "$APP_PATH/Contents/MacOS/Trayscale"
+
+# Copy icon
+sudo cp /tmp/trayscale.icns "$APP_PATH/Contents/Resources/Trayscale.icns"
+
+# Create Info.plist
+sudo tee "$APP_PATH/Contents/Info.plist" > /dev/null << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>Trayscale</string>
+    <key>CFBundleIconFile</key>
+    <string>Trayscale</string>
+    <key>CFBundleIdentifier</key>
+    <string>dev.deedles.Trayscale</string>
+    <key>CFBundleName</key>
+    <string>Trayscale</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+</dict>
+</plist>
+EOF
+
 echo "  ✓ Trayscale.app created in /Applications"
+
+# Install trayscale to Homebrew prefix
+pushd "$trayscale_folder"
+
+# Install binary to libexec (actual executable)
+sudo install -d "$HOMEBREW_PREFIX/libexec"
+sudo install bin/trayscale "$HOMEBREW_PREFIX/libexec/"
+
+# Install wrapper to bin (what users will run)
+cat > /tmp/trayscale.wrapper << EOF
+#!/bin/bash
+export XDG_DATA_DIRS="$HOMEBREW_PREFIX/share:\${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+exec "$HOMEBREW_PREFIX/libexec/trayscale"
+EOF
+sudo install /tmp/trayscale.wrapper "$HOMEBREW_PREFIX/bin/trayscale"
+
+schema_dir="$HOMEBREW_PREFIX/share/glib-2.0/schemas"
+nix_schemas_dir=$(find . -type d -name 'schemas' -print -quit)
+sudo install -d "$schema_dir"
+sudo install -m644 "$nix_schemas_dir/dev.deedles.Trayscale.gschema.xml" "$schema_dir/"
+sudo glib-compile-schemas "$schema_dir"
+
+share_dir="$HOMEBREW_PREFIX/share"
+sudo install -d "$share_dir/applications"
+sudo install -m644 share/applications/dev.deedles.Trayscale.desktop "$share_dir/applications/"
+
+sudo install -d "$share_dir/icons/hicolor/256x256/apps"
+sudo install -m644 share/icons/hicolor/256x256/apps/dev.deedles.Trayscale.png "$share_dir/icons/hicolor/256x256/apps/"
+
+popd
 
 echo ""
 echo "=== Setup Complete ==="
