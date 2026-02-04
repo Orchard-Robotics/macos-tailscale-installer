@@ -59,10 +59,10 @@ else
     echo "  ✓ Tailscale installed"
 fi
 
-if brew list --formula glib &>/dev/null; then
+if brew list --formula glib gsettings-desktop-schemas &>/dev/null; then
     echo "  ✓ glib already installed"
 else
-    brew install --formula glib
+    brew install --formula glib gsettings-desktop-schemas
     echo "  ✓ glib installed"
 fi
 
