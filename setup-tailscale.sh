@@ -59,6 +59,13 @@ else
     echo "  ✓ Tailscale installed"
 fi
 
+if brew list --formula glib &>/dev/null; then
+    echo "  ✓ glib already installed"
+else
+    brew install --formula glib
+    echo "  ✓ glib installed"
+fi
+
 # 5. Start the Tailscale service
 echo ""
 echo "[5/8] Starting Tailscale service..."
