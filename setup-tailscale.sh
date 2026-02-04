@@ -59,11 +59,18 @@ else
     echo "  ✓ Tailscale installed"
 fi
 
-if brew list --formula glib gsettings-desktop-schemas &>/dev/null; then
+if brew list --formula glib &>/dev/null; then
     echo "  ✓ glib already installed"
 else
-    brew install --formula glib gsettings-desktop-schemas
+    brew install --formula glib
     echo "  ✓ glib installed"
+fi
+
+if brew list --formula gsettings-desktop-schemas &>/dev/null; then
+    echo "  ✓ gsettings-desktop-schemas already installed"
+else
+    brew install --formula gsettings-desktop-schemas
+    echo "  ✓ gsettings-desktop-schemas installed"
 fi
 
 # 5. Start the Tailscale service
