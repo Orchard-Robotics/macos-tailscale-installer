@@ -182,8 +182,8 @@ echo "  ✓ Trayscale.app created in /Applications"
 pushd "$trayscale_folder"
 
 # Install binary to libexec (actual executable)
-sudo install -d "$HOMEBREW_PREFIX/libexec"
-sudo install bin/trayscale "$HOMEBREW_PREFIX/libexec/"
+sudo install -m744 -d "$HOMEBREW_PREFIX/libexec"
+sudo install -m744 bin/trayscale "$HOMEBREW_PREFIX/libexec/"
 
 # Install wrapper to bin (what users will run)
 cat > /tmp/trayscale.wrapper << EOF
@@ -191,20 +191,20 @@ cat > /tmp/trayscale.wrapper << EOF
 export XDG_DATA_DIRS="$HOMEBREW_PREFIX/share:\${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 exec "$HOMEBREW_PREFIX/libexec/trayscale"
 EOF
-sudo install /tmp/trayscale.wrapper "$HOMEBREW_PREFIX/bin/trayscale"
+sudo install -m744 /tmp/trayscale.wrapper "$HOMEBREW_PREFIX/bin/trayscale"
 
 schema_dir="$HOMEBREW_PREFIX/share/glib-2.0/schemas"
 nix_schemas_dir=$(find . -type d -name 'schemas' -print -quit)
-sudo install -d "$schema_dir"
-sudo install -m644 "$nix_schemas_dir/dev.deedles.Trayscale.gschema.xml" "$schema_dir/"
+sudo install -m744 -d "$schema_dir"
+sudo install -m744 "$nix_schemas_dir/dev.deedles.Trayscale.gschema.xml" "$schema_dir/"
 sudo glib-compile-schemas "$schema_dir"
 
 share_dir="$HOMEBREW_PREFIX/share"
-sudo install -d "$share_dir/applications"
-sudo install -m644 share/applications/dev.deedles.Trayscale.desktop "$share_dir/applications/"
+sudo install -m744 -d "$share_dir/applications"
+sudo install -m744 share/applications/dev.deedles.Trayscale.desktop "$share_dir/applications/"
 
-sudo install -d "$share_dir/icons/hicolor/256x256/apps"
-sudo install -m644 share/icons/hicolor/256x256/apps/dev.deedles.Trayscale.png "$share_dir/icons/hicolor/256x256/apps/"
+sudo install -m744 -d "$share_dir/icons/hicolor/256x256/apps"
+sudo install -m744 share/icons/hicolor/256x256/apps/dev.deedles.Trayscale.png "$share_dir/icons/hicolor/256x256/apps/"
 
 popd
 
