@@ -33,18 +33,18 @@ else
     echo "  ✓ Brew Tap (orchard-robotics/macos-tailscale-installer) installed"
 fi
 
-if brew list --formula orchard-robotics/macos-tailscale-installer/tailscale &>/dev/null; then
-    echo "  ✓ Tailscale already installed"
-else
-    brew install --formula orchard-robotics/macos-tailscale-installer/tailscale
-    echo "  ✓ Tailscale installed"
-fi
-
 if brew list --formula orchard-robotics/macos-tailscale-installer/trayscale &>/dev/null; then
     echo "  ✓ Trayscale already installed"
 else
     brew install --formula orchard-robotics/macos-tailscale-installer/trayscale
     echo "  ✓ Trayscale installed"
+fi
+
+if brew list --formula orchard-robotics/macos-tailscale-installer/tailscale &>/dev/null; then
+    echo "  ✓ Tailscale already installed"
+else
+    brew install --formula orchard-robotics/macos-tailscale-installer/tailscale
+    echo "  ✓ Tailscale installed"
 fi
 
 # Start the Tailscale service
