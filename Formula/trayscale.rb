@@ -22,15 +22,11 @@ class Trayscale < Formula
 #   end
 
   depends_on "go" => :build
-  depends_on "libadwaita" => :build
-  depends_on "gtk4" => :build
-  depends_on "gobject-introspection" => :build
-  depends_on "harfbuzz" => :build
-  depends_on "appstream" => :build
-  depends_on "glib" => :build
-  depends_on "cairo" => :build
-  depends_on "pango" => :build
-  depends_on "gdk-pixbuf" => :build
+  depends_on "libadwaita"
+  depends_on "gtk4"
+  depends_on "gobject-introspection"
+  depends_on "harfbuzz"
+  depends_on "appstream"
 
   # conflicts_with cask: "tailscale-app"
 
@@ -41,10 +37,10 @@ class Trayscale < Formula
 
     ldflags = %W[
       -s -w
-      -X deedles.dev/trayscale/internal/metadata.version=#{app_version}"
+      -X deedles.dev/trayscale/internal/metadata.version=#{app_version}
     ]
       
-    system "go", "build", *std_go_args(ldflags:), "./cmd/trayscale"
+    system "go", "build", *std_go_args(ldflags:, output: "trayscale"), "./cmd/trayscale"
 
     # Install binary to libexec (actual executable)
     libexec.install "trayscale"
@@ -59,10 +55,64 @@ class Trayscale < Formula
     # Install GLib schema
     (share/"glib-2.0/schemas").install "dev.deedles.Trayscale.gschema.xml"
 
+    # Create .app bundle
+    app = prefix/"Trayscale.app/Contents"
+    app.mkpath
+    (app/"MacOS").mkpath
+    (app/"Resources").mkpath
+
+    (app/"Info.plist").write <<~XML
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+      <dict>
+        <key>CFBundleExecutable</key>
+        <string>trayscale</string>
+        <key>CFBundleIdentifier</key>
+        <string>dev.deedles.Trayscale</string>
+        <key>CFBundleName</key>
+        <string>Trayscale</string>
+        <key>CFBundleVersion</key>
+        <string>#{app_version}</string>
+        <key>CFBundleShortVersionString</key>
+        <string>#{app_version}</string>
+        <key>CFBundleIconFile</key>
+        <string>AppIcon</string>
+        <key>CFBundlePackageType</key>
+        <string>APPL</string>
+        <key>NSHighResolutionCapable</key>
+        <true/>
+      </dict>
+      </plist>
+    XML
+
+    # Create launcher script inside .app
+    (app/"MacOS/trayscale").write <<~EOS
+      #!/bin/bash
+      export XDG_DATA_DIRS="#{HOMEBREW_PREFIX}/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+      exec "#{libexec}/trayscale" "$@"
+    EOS
+    (app/"MacOS/trayscale").chmod 0755
+
+    # Copy icon (convert PNG to icns if needed, or use existing)
+    cp "dev.deedles.Trayscale.png", app/"Resources/AppIcon.png"
+
   end
 
 #   test do
 #     # Basic test that the binary runs
 #     assert_match "Usage", shell_output("#{bin}/trayscale --help", 2)
 #   end
+
+  def post_install
+    system "cp", "-r", "#{prefix}/Trayscale.app", "/Applications/"
+  rescue
+    opoo "Could not copy to /Applications. Run: cp -r #{prefix}/Trayscale.app /Applications/"
+  end
+
+  def post_uninstall
+    rm_f "/Applications/Trayscale.app"
+  rescue
+    opoo "Could not remove Trayscale.app. Run: sudo rm -rf /Applications/Trayscale.app"
+  end
 end
