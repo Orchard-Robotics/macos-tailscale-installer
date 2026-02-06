@@ -7,7 +7,7 @@ echo ""
 
 # Check for and install Xcode Command Line Tools
 echo "[1/6] Checking Xcode Command Line Tools..."
-if xcode-select -p &>/dev/null; then
+if xcode-select -p >/dev/null; then
     echo "  ✓ Xcode Command Line Tools already installed"
 else
     echo "  Installing Xcode Command Line Tools..."
@@ -20,7 +20,7 @@ fi
 # Install Tailscale/Trayscale from Homebrew
 echo ""
 echo "[2/6] Installing Tailscale/Trayscale from Homebrew..."
-if ! command -v brew &>/dev/null; then
+if ! command -v brew >/dev/null; then
     echo "  Error: Homebrew is not installed. Please install it first:"
     echo "  /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
     exit 1
