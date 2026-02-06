@@ -34,14 +34,18 @@ else
 fi
 
 if brew list --formula orchard-robotics/macos-tailscale-installer/trayscale &>/dev/null; then
-    echo "  ✓ Trayscale already installed"
+    echo "  ✓ Trayscale already installed, reinstalling"
+    brew cleanup --prune=0 -s orchard-robotics/macos-tailscale-installer/trayscale
+    brew reinstall orchard-robotics/macos-tailscale-installer/trayscale
 else
     brew install --formula orchard-robotics/macos-tailscale-installer/trayscale
     echo "  ✓ Trayscale installed"
 fi
 
 if brew list --formula orchard-robotics/macos-tailscale-installer/tailscale &>/dev/null; then
-    echo "  ✓ Tailscale already installed"
+    echo "  ✓ Tailscale already installed, reinstalling"
+    brew cleanup --prune=0 -s orchard-robotics/macos-tailscale-installer/tailscale
+    brew reinstall orchard-robotics/macos-tailscale-installer/tailscale
 else
     brew install --formula orchard-robotics/macos-tailscale-installer/tailscale
     echo "  ✓ Tailscale installed"
