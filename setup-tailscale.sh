@@ -50,6 +50,7 @@ fi
 # Start the Tailscale service
 echo ""
 echo "[3/6] Starting Tailscale service..."
+sudo pkill -f tailscaled
 sudo brew services start tailscale
 echo "  ✓ Tailscale service started"
 

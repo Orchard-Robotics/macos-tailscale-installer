@@ -82,6 +82,8 @@ class Trayscale < Formula
         <string>APPL</string>
         <key>NSHighResolutionCapable</key>
         <true/>
+        <key>LSUIElement</key>
+        <true/>
       </dict>
       </plist>
     XML
