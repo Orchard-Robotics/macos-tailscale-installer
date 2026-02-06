@@ -27,7 +27,9 @@ if ! command -v brew &>/dev/null; then
 fi
 
 if brew tap | grep orchard-robotics/macos-tailscale-installer &>/dev/null; then
-    echo "  ✓ Brew Tap already installed"
+    echo "  ✓ Brew Tap already installed, reinstalling"
+    brew untap --force Orchard-Robotics/macos-tailscale-installer
+    brew tap Orchard-Robotics/macos-tailscale-installer
 else
     brew tap Orchard-Robotics/macos-tailscale-installer
     echo "  ✓ Brew Tap (orchard-robotics/macos-tailscale-installer) installed"
