@@ -107,7 +107,9 @@ INSTALLED_BIN_PATH=$(brew list orchard-robotics/macos-tailscale-installer/traysc
                      grep Trayscale.app/Contents/MacOS/trayscale | \
                      xargs -0 dirname | xargs -0 dirname | xargs -0 dirname)
 sudo rm -rf "$APP_PATH"
-cp -r "$INSTALLED_BIN_PATH" "$APP_PATH"
+sudo cp -r "$INSTALLED_BIN_PATH" "$APP_PATH"
+sudo chown -R "$USER" "$APP_PATH"
+sudo chmod -R +rwx "$APP_PATH"
 
 echo ""
 echo "=== Setup Complete ==="
